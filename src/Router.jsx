@@ -9,7 +9,7 @@ import RootLayout from "./layouts/RootLayout";
 import HomePage   from "./pages/HomePage";
 import CountryPage from "./pages/CountryPage";
 import NotFound   from "./pages/NotFound";
-//Ändra 
+
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
