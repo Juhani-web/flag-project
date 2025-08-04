@@ -1,0 +1,14 @@
+.country-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+.main-content {
+  padding: 2rem;
+}
+.error-page {
+  padding: 2rem;
+  text-align: center;
+}
