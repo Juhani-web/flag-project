@@ -1,12 +1,12 @@
 // src/api/Countries.js
 
-const BASE_URL = "https://restcountries.com/v3.1/all?fields=name,flags`";
+const BASE_URL = "https://restcountries.com/v3.1";
 
 /**
- * Hämta alla länder (name + flags).
+ * Hämta alla länder (namn, flagga, region, kod).
  */
 export async function fetchAllCountries() {
-  const res = await fetch(`${BASE_URL}/all?fields=name,flags,region,cca3`);
+  const res = await fetch(`${BASE_URL}/all?fields=name,flags,region,population,cca3`);
   if (!res.ok) {
     throw new Error(`Kunde inte hämta länder: ${res.status}`);
   }
@@ -14,7 +14,7 @@ export async function fetchAllCountries() {
 }
 
 /**
- * Hämta ett land baserat på namn (din detaljerade ruta).
+ * Hämta ett land baserat på namn.
  */
 export async function fetchCountryByName(name) {
   const res = await fetch(`${BASE_URL}/name/${encodeURIComponent(name)}?fullText=true`);
@@ -22,15 +22,14 @@ export async function fetchCountryByName(name) {
     throw new Error(`Kunde inte hämta landet ${name}: ${res.status}`);
   }
   const data = await res.json();
-  // API returnerar lista, men vi tar första objektet
-  return data[0];
+  return data[0]; // API returnerar en array
 }
 
 /**
  * Hämta länder i en region.
  */
 export async function fetchCountriesByRegion(region) {
-  const res = await fetch(`${BASE_URL}/region/${encodeURIComponent(region)}?fields=name,flags,cca3`);
+  const res = await fetch(`${BASE_URL}/region/${encodeURIComponent(region)}?fields=name,flags,cca3,population`);
   if (!res.ok) {
     throw new Error(`Kunde inte hämta regionen ${region}: ${res.status}`);
   }

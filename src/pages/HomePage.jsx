@@ -9,18 +9,20 @@ export default function HomePage() {
   const [error, setError]         = useState(null);
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const data = await fetchAllCountries();
-        setCountries(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+  async function loadData() {
+    try {
+      const data = await fetchAllCountries();
+      console.log("Laddade länder:", data); // ✅
+      setCountries(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    loadData();
-  }, []);
+  }
+  loadData();
+}, []);
+
 
   if (loading) return <p>Loading länder…</p>;
   if (error)   return <p>Fel vid hämtning: {error}</p>;
@@ -35,6 +37,7 @@ export default function HomePage() {
             name={country.name.common}
             flag={country.flags.png}
             code={country.cca3}
+            population={country.population}
           />
         ))}
       </div>

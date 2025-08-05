@@ -8,11 +8,12 @@ import {
   Typography,
 } from '@mui/material';
 
-function CountryCard({ country }) {
+function CountryCard({ name, flag, code, population }) {
+  console.log({ name, flag, code,population});
   return (
     <Card
       component={Link}
-      to={`/country/${country.name.common}`}
+      to={`/country/${name}`}
       sx={{
         maxWidth: 300,
         margin: 2,
@@ -26,15 +27,15 @@ function CountryCard({ country }) {
       <CardMedia
         component="img"
         height="160"
-        image={country.flags.png}
-        alt={country.flags.alt || `Flag of ${country.name.common}`}
+        image={flag}
+        alt={ `Flag of ${name}`}
       />
       <CardContent>
         <Typography variant="h6" gutterBottom>
-          {country.name.common}
+          {name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Officiellt namn: {country.name.official}
+          Officiellt namn: {name}
         </Typography>
       </CardContent>
     </Card>
