@@ -1,112 +1,105 @@
-// src/pages/HomePage.jsx
-
-import {
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-} from "@mui/material";
 import { useState, useEffect } from "react";
-import { fetchAllCountries } from "../api/Countries";
+import {
+  Box,
+  Grid,
+  TextField,
+  InputAdornment,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import CountryCard from "../components/CountryCard";
 
 export default function HomePage() {
   const [countries, setCountries] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [region, setRegion] = useState("All");
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState("All");
-
-  // ✅ Ladda alla länder en gång vid start
   useEffect(() => {
-    async function loadData() {
-      try {
-        const data = await fetchAllCountries();
-        setCountries(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadData();
+    fetch(
+      "https://restcountries.com/v3.1/all?fields=name,population,region,capital,flags,cca3"
+    )
+      .then((res) => res.json())
+      .then((data) => setCountries(data))
+      .catch((err) => console.error("Error fetching countries:", err));
   }, []);
 
-  // ✅ Filtrera baserat på sökning + region
   const filteredCountries = countries.filter((country) => {
     const matchesSearch = country.name.common
       .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesRegion =
-      selectedRegion === "All" || country.region === selectedRegion;
+      .includes(searchQuery.toLowerCase());
+    const matchesRegion = region === "All" || country.region === region;
     return matchesSearch && matchesRegion;
   });
 
-  // ✅ Sätt vald region (används för filtrering)
-  function handleRegionChange(region) {
-    setSelectedRegion(region);
-  }
-
-  if (loading) return <p>Loading länder…</p>;
-  if (error) return <p>Fel vid hämtning: {error}</p>;
-
   return (
-    <div className="home-page">
-      {/* Filter & Sökfält */}
+    <Box sx={{ px: { xs: 2, md: 6 }, py: 4 }}>
+      {/* Sökfält + Region filter */}
       <Box
         sx={{
           display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "stretch", md: "center" },
           flexWrap: "wrap",
-          justifyContent:"space-between",
-          padding:"8px",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          px: 3.5,
+          mb: 8,
           gap: 2,
-          mb: 3,
         }}
       >
         <TextField
-          size="small"
           placeholder="Search for a country..."
           variant="outlined"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ minWidth: 200 }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{ flex: 1, maxWidth: 400, mr: { md: 2 }, mb: { xs: 2, md: 0 } }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
         />
 
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>Filter by Region</InputLabel>
-          <Select
-            value={selectedRegion}
-            onChange={(e) => handleRegionChange(e.target.value)}
-            label="Filter by Region"
-          >
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value="Africa">Africa</MenuItem>
-            <MenuItem value="Americas">Americas</MenuItem>
-            <MenuItem value="Asia">Asia</MenuItem>
-            <MenuItem value="Europe">Europe</MenuItem>
-            <MenuItem value="Oceania">Oceania</MenuItem>
-          </Select>
-        </FormControl>
+        <Select
+          value={region}
+          onChange={(e) => setRegion(e.target.value)}
+          displayEmpty
+          sx={{ width: 200 }}
+        >
+          <MenuItem value="All">Filter by Region</MenuItem>
+          <MenuItem value="Africa">Africa</MenuItem>
+          <MenuItem value="Americas">Americas</MenuItem>
+          <MenuItem value="Asia">Asia</MenuItem>
+          <MenuItem value="Europe">Europe</MenuItem>
+          <MenuItem value="Oceania">Oceania</MenuItem>
+        </Select>
       </Box>
 
-      {/* Titel */}
-      <h1>Världens Länder</h1>
-
-      {/* Länder */}
-      <div className="country-grid">
+      {/* Länder-korten */}
+      <Grid container spacing={6} justifyContent="center">
         {filteredCountries.map((country) => (
-          <CountryCard
+          <Grid
+            item
             key={country.cca3}
-            name={country.name.common}
-            flag={country.flags.png}
-            code={country.cca3}
-            population={country.population}
-          />
+            xs={12}
+            sm={6}
+            md={3}
+            display="flex"
+            justifyContent="center"
+          >
+            <CountryCard
+              country={country}
+              width={250}
+              height={320}
+              flagHeight={160}
+            />
+          </Grid>
         ))}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   );
 }
